@@ -1,4 +1,4 @@
-import { TrainerConquest } from "./game";
+import {TrainerConquest} from "./game";
 
 export class TrainerConquestPlayer extends Rooms.RoomGamePlayer<TrainerConquest> {
 	resultText: string;

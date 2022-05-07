@@ -1,11 +1,11 @@
-import { TrainerConquest } from "./game";
+import {TrainerConquest} from "./game";
 
 export const commands: Chat.ChatCommands = {
 	tc: 'trainerconquest',
 	trainerconquest: {
 		'': 'help',
 		help(target, room, user) {
-			return this.parse('/help trainerconquest')
+			return this.parse('/help trainerconquest');
 		},
 		new: 'create',
 		create(target, room, user) {
@@ -46,14 +46,14 @@ export const commands: Chat.ChatCommands = {
 			if (!(user.id in game.playerTable)) throw new Chat.ErrorMessage("You aren't in this game.");
 			game.removePlayer(user);
 			this.sendReply("You left the game of Trainer Conquest.");
-		}
+		},
 	},
 	trainerconquesthelp: [
 		"/trainerconquest create - Makes a new Trainer Conquest game. Requires % @ # &",
 		"/trainerconquest start - Starts the Trainer Conquest game. Requires % @ # &",
 		"/trainerconquest end - Forcibly ends a Trainer Conquest game. Requires % @ # &",
 		"/trainerconquest join - Join the Trainer Conquest game.",
-		"/trainerconquest leave - Leave the Trainer Conquest game."
-		
+		"/trainerconquest leave - Leave the Trainer Conquest game.",
+
 	],
 };

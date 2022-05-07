@@ -1,9 +1,9 @@
-import { ModdedDex } from "../../../sim/dex";
-import { User } from "../../users";
-import { TCFacility } from "./facilities";
-import { TCKingdom, TCTrainer } from "./game-objects";
-import { TCLabor } from "./labor";
-import { TrainerConquestPlayer } from "./player";
+import {ModdedDex} from "../../../sim/dex";
+import {User} from "../../users";
+import {TCFacility} from "./facilities";
+import {TCKingdom, TCTrainer} from "./game-objects";
+import {TCLabor} from "./labor";
+import {TrainerConquestPlayer} from "./player";
 
 export class AwaitChoice {
 	forPlayer: TrainerConquestPlayer;
@@ -111,181 +111,180 @@ export class TrainerConquest extends Rooms.RoomGame<TrainerConquestPlayer> {
 		if (!args) throw new Chat.ErrorMessage("Invalid choice.");
 
 		switch (args[0]) {
+		// Basic Actions
 
-			// Basic Actions
-
-			case 'train':
-				this.requireTrainer(args).tryTrain();
-				player.resultText = `Training successful. (placeholder msg)`;
-				player.resetPage();
-				return;
-			case 'catch':
-				this.requireTrainer(args).tryCatch();
-				// display new Pokemon
-				return;
-			case 'recruit':
-				this.requireTrainer(args).tryRecruit();
-				return;
+		case 'train':
+			this.requireTrainer(args).tryTrain();
+			player.resultText = `Training successful. (placeholder msg)`;
+			player.resetPage();
+			return;
+		case 'catch':
+			this.requireTrainer(args).tryCatch();
+			// display new Pokemon
+			return;
+		case 'recruit':
+			this.requireTrainer(args).tryRecruit();
+			return;
 
 			// Faculty Actions
 
-			case 'facility': {
-				const trainer = this.requireTrainer(args);
-				const facility = this.currentKingdom.requireFacility(args);
-				player.resultText = facility.doAction(trainer, args);
-				player.resetPage();
-				return;
-			}
-			case 'labor': {
-				const trainer = this.requireTrainer(args);
-				const labor = this.currentKingdom.requireLabor(args);
-				labor.activate(trainer, args);
-				return;
-			}
-			case 'movepokemon': {
-				const trainer1 = this.requireTrainer(args);
-				const trainer2 = this.requireTrainer(args);
-				// do pokemon move
-				return;
-			}
-			case 'moveitem': {
-				const trainer1 = this.requireTrainer(args);
-				const trainer2 = this.requireTrainer(args);
-				const itemid = toID(args.shift());
-				if (!itemid) throw new Chat.ErrorMessage("No item specified.");
-				trainer1.transferItem(trainer2, itemid);
-				return;
-			}
-			case 'move': {
-				const trainer = this.requireTrainer(args);
-				const kingdom = this.requireKingdom(args);
-				trainer.moveTo(kingdom);
-				return;
-			}
+		case 'facility': {
+			const trainer = this.requireTrainer(args);
+			const facility = this.currentKingdom.requireFacility(args);
+			player.resultText = facility.doAction(trainer, args);
+			player.resetPage();
+			return;
+		}
+		case 'labor': {
+			const trainer = this.requireTrainer(args);
+			const labor = this.currentKingdom.requireLabor(args);
+			labor.activate(trainer, args);
+			return;
+		}
+		case 'movepokemon': {
+			const trainer1 = this.requireTrainer(args);
+			const trainer2 = this.requireTrainer(args);
+			// do pokemon move
+			return;
+		}
+		case 'moveitem': {
+			const trainer1 = this.requireTrainer(args);
+			const trainer2 = this.requireTrainer(args);
+			const itemid = toID(args.shift());
+			if (!itemid) throw new Chat.ErrorMessage("No item specified.");
+			trainer1.transferItem(trainer2, itemid);
+			return;
+		}
+		case 'move': {
+			const trainer = this.requireTrainer(args);
+			const kingdom = this.requireKingdom(args);
+			trainer.moveTo(kingdom);
+			return;
+		}
 
-			// Battle Actions
+		// Battle Actions
 
-			case 'sabotage': {
-				const targetKingdom = this.requireKingdom(args);
-				if (!targetKingdom.owner || 
+		case 'sabotage': {
+			const targetKingdom = this.requireKingdom(args);
+			if (!targetKingdom.owner ||
 						targetKingdom.owner === this.currentKingdom.owner ||
-						!targetKingdom.isAdjacent(this.currentKingdom)) 
-					throw new Chat.ErrorMessage("Invalid kingdom.");
-				const targetType = args.shift()?.trim();
-				let target: TCFacility | TCLabor;
-				switch (targetType) {
-					case 'facility':
-						target = targetKingdom.requireFacility(args);
-						break;
-					case 'labor':
-						target = targetKingdom.requireLabor(args);
-						break;
-					default:
-						throw new Chat.ErrorMessage("Target type must be 'facility' or 'labor'");
-				}
-				const trainer1 = this.requireTrainer(args);
-				const trainer2 = this.popTrainer(args);
-				if (trainer2) {
-					this.initSabotage(target, [trainer1, trainer2]);
-				} else {
-					this.initSabotage(target, [trainer1]);
-				}
-				return;
+						!targetKingdom.isAdjacent(this.currentKingdom)) { throw new Chat.ErrorMessage("Invalid kingdom."); }
+			const targetType = args.shift()?.trim();
+			let target: TCFacility | TCLabor;
+			switch (targetType) {
+			case 'facility':
+				target = targetKingdom.requireFacility(args);
+				break;
+			case 'labor':
+				target = targetKingdom.requireLabor(args);
+				break;
+			default:
+				throw new Chat.ErrorMessage("Target type must be 'facility' or 'labor'");
 			}
-			case 'reclaim':
-				return;
-
-			case 'rankup': {
-				const trainer = this.requireTrainer(args);
-				// filler formula to use with no host
-				let chance = 0;
-				switch (trainer.rank) {
-					case 1: {
-						for (const pokemon of trainer.party) {
-							chance += (pokemon.level - 15) * 1.5 + 5;
-							chance += (pokemon.friendship - 5) / 24;
-							chance += Object.values(pokemon.evs).reduce((a, b) => a + b) / 20;
-							// check for item
-						}
-						break;
-					}
-					case 2: {
-						for (const pokemon of trainer.party) {
-							if (pokemon.level > 40) chance += (pokemon.level - 40) * 0.4;
-							chance += (pokemon.level - 15) * 1.5 + 5;
-							chance += (pokemon.friendship) / 51;
-							chance += Object.values(pokemon.evs).reduce((a, b) => a + b) / 120;
-							// check for item
-						}
-						break;
-					}
-					case 3:
-						throw new Chat.ErrorMessage(`${trainer.name} can't rank up anymore`);
-				}
-				if (Math.random() * 100 > chance) {
-					// success!
-					trainer.rank++;
-				} else {
-					// failure...
-				}
-				return;
+			const trainer1 = this.requireTrainer(args);
+			const trainer2 = this.popTrainer(args);
+			if (trainer2) {
+				this.initSabotage(target, [trainer1, trainer2]);
+			} else {
+				this.initSabotage(target, [trainer1]);
 			}
+			return;
+		}
+		case 'reclaim':
+			return;
 
-			case 'conquer': {
-				const targetKingdom = this.requireKingdom(args);
-				if (!targetKingdom.owner || 
+		case 'rankup': {
+			const trainer = this.requireTrainer(args);
+			// filler formula to use with no host
+			let chance = 0;
+			switch (trainer.rank) {
+			case 1: {
+				for (const pokemon of trainer.party) {
+					chance += (pokemon.level - 15) * 1.5 + 5;
+					chance += (pokemon.friendship - 5) / 24;
+					chance += Object.values(pokemon.evs).reduce((a, b) => a + b) / 20;
+					// check for item
+				}
+				break;
+			}
+			case 2: {
+				for (const pokemon of trainer.party) {
+					if (pokemon.level > 40) chance += (pokemon.level - 40) * 0.4;
+					chance += (pokemon.level - 15) * 1.5 + 5;
+					chance += (pokemon.friendship) / 51;
+					chance += Object.values(pokemon.evs).reduce((a, b) => a + b) / 120;
+					// check for item
+				}
+				break;
+			}
+			case 3:
+				throw new Chat.ErrorMessage(`${trainer.name} can't rank up anymore`);
+			}
+			if (Math.random() * 100 > chance) {
+				// success!
+				trainer.rank++;
+			} else {
+				// failure...
+			}
+			return;
+		}
+
+		case 'conquer': {
+			const targetKingdom = this.requireKingdom(args);
+			if (!targetKingdom.owner ||
 					targetKingdom.owner === this.currentKingdom.owner ||
-					!targetKingdom.isAdjacent(this.currentKingdom)) 
-				throw new Chat.ErrorMessage("Invalid kingdom.");
+					!targetKingdom.isAdjacent(this.currentKingdom)) { throw new Chat.ErrorMessage("Invalid kingdom."); }
 
-				const attackingTrainers = [];
-				let trainer;
-				while (trainer = this.requireTrainer(args)) attackingTrainers.push(trainer);
-				if (!attackingTrainers.length) throw new Chat.ErrorMessage("You must send at least one trainer");
-				this.initConquest(targetKingdom, attackingTrainers);
-			}
-			
-			// Other choices
+			const attackingTrainers = [];
+			let trainer;
+			while ((trainer = this.requireTrainer(args))) attackingTrainers.push(trainer);
+			if (!attackingTrainers.length) throw new Chat.ErrorMessage("You must send at least one trainer");
+			this.initConquest(targetKingdom, attackingTrainers);
+			return;
+		}
 
-			case 'useskill':
-				return;
-			
-			case 'moveset': {
-				const trainer = this.requireTrainer(args);
-				const pokemon = trainer.requirePokemon(args);
-				pokemon.setMoves(args);
-				return;
-			}
-			
-			case 'giveitem': {
-				const trainer = this.requireTrainer(args);
-				const pokemon = trainer.requirePokemon(args);
-				const itemid = toID(args.join(' '));
-				if (!itemid || !trainer.items.includes(itemid)) throw new Chat.ErrorMessage("Invalid item.");
-				trainer.items.splice(trainer.items.indexOf(itemid), 1);
-				pokemon.item = itemid;
-				return;
-			}
-			
-			case 'takeitem': {
-				const trainer = this.requireTrainer(args);
-				const pokemon = trainer.requirePokemon(args);
-				if (!pokemon.item) throw new Chat.ErrorMessage("Pokemon has no item.");
-				trainer.items.push(pokemon.item);
-				pokemon.item = '';
-			}
-			
-			case 'evolve':
-				const trainer = this.requireTrainer(args);
-				const pokemon = trainer.requirePokemon(args);
-				const targetSpecies = args.shift()?.trim();
-				if (!targetSpecies) throw new Chat.ErrorMessage("Must give the target species");
-				pokemon.evolveInto(targetSpecies);
-				return;
+		// Other choices
 
-			case 'done':
-				this.nextKingdom();
-				return;
+		case 'useskill':
+			return;
+
+		case 'moveset': {
+			const trainer = this.requireTrainer(args);
+			const pokemon = trainer.requirePokemon(args);
+			pokemon.setMoves(args);
+			return;
+		}
+
+		case 'giveitem': {
+			const trainer = this.requireTrainer(args);
+			const pokemon = trainer.requirePokemon(args);
+			const itemid = toID(args.join(' '));
+			if (!itemid || !trainer.items.includes(itemid)) throw new Chat.ErrorMessage("Invalid item.");
+			trainer.items.splice(trainer.items.indexOf(itemid), 1);
+			pokemon.item = itemid;
+			return;
+		}
+
+		case 'takeitem': {
+			const trainer = this.requireTrainer(args);
+			const pokemon = trainer.requirePokemon(args);
+			if (!pokemon.item) throw new Chat.ErrorMessage("Pokemon has no item.");
+			trainer.items.push(pokemon.item);
+			pokemon.item = '';
+			return;
+		}
+
+		case 'evolve':
+			const trainer = this.requireTrainer(args);
+			const pokemon = trainer.requirePokemon(args);
+			const targetSpecies = args.shift()?.trim();
+			if (!targetSpecies) throw new Chat.ErrorMessage("Must give the target species");
+			pokemon.evolveInto(targetSpecies);
+			return;
+
+		case 'done':
+			this.nextKingdom();
+			return;
 		}
 		throw new Chat.ErrorMessage("Unrecognized command.");
 	}
@@ -298,9 +297,9 @@ export class TrainerConquest extends Rooms.RoomGame<TrainerConquestPlayer> {
 	initSabotage(target: TCFacility | TCLabor, attackingTrainers: TCTrainer[]) {
 		// check if player has already sabotaged it this month
 		if (target.sabotageCount >= 6) throw new Chat.ErrorMessage("That facility can't be sabotaged anymore");
-		let buf = `<p>Your ${target.name} in ${target.kingdom.name} is being sabotaged!</p>`;
+		const buf = `<p>Your ${target.name} in ${target.kingdom.name} is being sabotaged!</p>`;
 		// Choose Trainers to defend
-		this.awaitChoice(target.kingdom.owner!, function(choice) {
+		this.awaitChoice(target.kingdom.owner!, function (choice) {
 			const args = choice.split(/\s+/);
 			const defendingTrainers = [];
 			return false;
@@ -311,7 +310,7 @@ export class TrainerConquest extends Rooms.RoomGame<TrainerConquestPlayer> {
 		// set up some kind of object to track the conquest battle
 		// prompt attacker to choose trainers to fight
 		// create battle room
-		
+
 	}
 
 	updateConquest(battleRoom: GameRoom, winnerid: ID) {
@@ -322,7 +321,7 @@ export class TrainerConquest extends Rooms.RoomGame<TrainerConquestPlayer> {
 	}
 
 	createBattle(trainer1: TCTrainer, trainer2: TCTrainer) {
-		let format = "gen8customgame";
+		const format = "gen8customgame";
 
 		if (!trainer1.owner || !trainer2.owner) throw new Error("Trainers must be owned by players");
 

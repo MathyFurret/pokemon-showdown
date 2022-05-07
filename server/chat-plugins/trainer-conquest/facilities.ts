@@ -5,7 +5,6 @@ function countTrue<T>(arr: T[], callback: (val: T) => boolean = x => !!x): numbe
 }
 
 export abstract class TCFacility {
-	
 	kingdom: TCKingdom;
 	cooldown: number;
 	sabotageCount: number;
@@ -59,7 +58,7 @@ abstract class TCBaseItemShop extends TCFacility {
 		buf += `<h1>${this.name}</h1>`;
 		buf += `<p><i>Welcome to the ${this.name}! Here are our wares today:</i></p>`;
 		if (trainer) {
-			buf += `<p><small>Click an item to take it. Once you do, it will no longer be available this month.</small></p><p>`
+			buf += `<p><small>Click an item to take it. Once you do, it will no longer be available this month.</small></p><p>`;
 			for (const itemID of this.availableItems) {
 				// TODO: Should be a table
 				buf += `<button class="button" name="send" value="/msgroom ${this.kingdom.game.roomid}, /choose facility ${trainer.num} ${this.num} ${itemID}" style="width:150px;max-width:100%">${Dex.items.get(itemID).name}</button><br>`;
@@ -137,14 +136,13 @@ class TCMysticForest extends TCFacility {
 
 	doAction(trainer: TCTrainer, args: string[]) {
 		const pokemon = trainer.requirePokemon(args);
-		
+
 		const abilityID = toID(args.shift());
 		const natureID = toID(args.shift());
 		if (!abilityID || !natureID) throw new Chat.ErrorMessage(`Not enough arguments.`);
 
-		if (!(abilityID === toID(pokemon.species.abilities[0])
-				|| abilityID === toID(pokemon.species.abilities[1]))) 
-		{
+		if (!(abilityID === toID(pokemon.species.abilities[0]) ||
+				abilityID === toID(pokemon.species.abilities[1]))) {
 			throw new Chat.ErrorMessage(`Invalid ability for ${pokemon.species.name}: ${abilityID}`);
 		}
 
@@ -166,7 +164,7 @@ class TCHiddenDojo extends TCFacility {
 
 	doAction(trainer: TCTrainer, args: string[]) {
 		const pokemon = trainer.requirePokemon(args);
-		
+
 		const ability = pokemon.species.abilities['H'];
 		if (!ability) throw new Chat.ErrorMessage(`${pokemon.species.name} doesn't have a Hidden Ability`);
 
@@ -184,20 +182,20 @@ class TCPowerGym extends TCFacility {
 	doAction(trainer: TCTrainer, args: string[]) {
 		const pokemon = trainer.requirePokemon(args);
 
-		let evsList = args.shift()?.split('|');
+		const evsList = args.shift()?.split('|');
 		if (!evsList || evsList.length !== 6) throw new Chat.ErrorMessage(`Invalid EVs`);
 
-		let parsedEVsList = evsList.map(val => parseInt(val));
+		const parsedEVsList = evsList.map(val => parseInt(val));
 		if (parsedEVsList.some(stat => isNaN(stat) || stat < 0 || stat > 252)) throw new Chat.ErrorMessage(`Invalid EVs`);
 
 		let oldSum = Object.values(pokemon.evs).reduce((a, b) => a + b);
 		let newSum = parsedEVsList.reduce((a, b) => a + b);
 		if (oldSum !== newSum) throw new Chat.ErrorMessage(`Sum of EVs must remain ${oldSum}`);
 
-		let ivsList = args.shift()?.split('|');
+		const ivsList = args.shift()?.split('|');
 		if (!ivsList || ivsList.length !== 6) throw new Chat.ErrorMessage(`Invalid IVs`);
 
-		let parsedIVsList = ivsList.map(val => parseInt(val));
+		const parsedIVsList = ivsList.map(val => parseInt(val));
 		if (parsedIVsList.some(stat => isNaN(stat) || stat < 0 || stat > 31)) throw new Chat.ErrorMessage(`Invalid IVs`);
 
 		oldSum = Object.values(pokemon.ivs).reduce((a, b) => a + b);
@@ -248,22 +246,22 @@ class TCDayCare extends TCFacility {
 
 	doAction(trainer: TCTrainer, args: string[]) {
 		switch (args.shift()) {
-			case 'breed':
-				const pokemon1 = trainer.requirePokemon(args);
-				const pokemon2 = trainer.requirePokemon(args);
-				// breed them
-				return `${trainer.name}'s ${pokemon1.species.name} and ${pokemon2.species.name} had a baby! The egg will hatch after ${this.hatchTime} months.`;
-			case 'takepokemon':
-				if (!this.egg) throw new Chat.ErrorMessage(`There's no egg at the daycare.`);
-				if (this.hatchTime > 0) throw new Chat.ErrorMessage(`The egg hasn't hatched yet.`);
-				if (trainer.party.length >= trainer.maxPokemon) throw new Chat.ErrorMessage(`${trainer.name}'s party is full.`);
-				const newPokemon = this.egg;
-				this.egg = null;
-				trainer.party.push(newPokemon);
-				newPokemon.trainer = trainer;
-				return `${trainer.name} took the hatched ${newPokemon.species.name}.`;
-			default:
-				throw new Chat.ErrorMessage("Invalid arguments for daycare");
+		case 'breed':
+			const pokemon1 = trainer.requirePokemon(args);
+			const pokemon2 = trainer.requirePokemon(args);
+			// breed them
+			return `${trainer.name}'s ${pokemon1.species.name} and ${pokemon2.species.name} had a baby! The egg will hatch after ${this.hatchTime} months.`;
+		case 'takepokemon':
+			if (!this.egg) throw new Chat.ErrorMessage(`There's no egg at the daycare.`);
+			if (this.hatchTime > 0) throw new Chat.ErrorMessage(`The egg hasn't hatched yet.`);
+			if (trainer.party.length >= trainer.maxPokemon) throw new Chat.ErrorMessage(`${trainer.name}'s party is full.`);
+			const newPokemon = this.egg;
+			this.egg = null;
+			trainer.party.push(newPokemon);
+			newPokemon.trainer = trainer;
+			return `${trainer.name} took the hatched ${newPokemon.species.name}.`;
+		default:
+			throw new Chat.ErrorMessage("Invalid arguments for daycare");
 		}
 	}
 }
@@ -302,17 +300,17 @@ class TCHermitage extends TCFacility {
 
 	doAction(trainer: TCTrainer, args: string[]) {
 		let trialTime: number, targetRank: 2 | 3;
-		switch(trainer.rank) {
-			case 1:
-				trialTime = 5;
-				targetRank = 2;
-				break;
-			case 2:
-				trialTime = 12;
-				targetRank = 3;
-				break;
-			case 3:
-				throw new Chat.ErrorMessage(`${trainer.name} is already rank 3 and can't rank up further`);
+		switch (trainer.rank) {
+		case 1:
+			trialTime = 5;
+			targetRank = 2;
+			break;
+		case 2:
+			trialTime = 12;
+			targetRank = 3;
+			break;
+		case 3:
+			throw new Chat.ErrorMessage(`${trainer.name} is already rank 3 and can't rank up further`);
 		}
 		this.trainers.push({trainer, timeRemaining: trialTime, targetRank});
 		// mark trainer as unavailable
@@ -348,7 +346,7 @@ class TCShelter extends TCFacility {
 		const newPokemon = this.pokemon;
 		this.pokemon = null;
 		trainer.party.push(new TCPokemon(trainer, newPokemon));
-		return `${trainer.name} befriended the ${newPokemon}.`
+		return `${trainer.name} befriended the ${newPokemon}.`;
 	}
 }
 
@@ -358,29 +356,28 @@ class TCPark extends TCFacility {
 	doAction(trainer: TCTrainer, args: string[]) {
 		// if trainer is rank 1, have an extra arg that is a set of StatIDs separated by |
 		switch (trainer.rank) {
-			case 1: {
-				const statList = args.shift()?.split('|').filter(x => !!x);
-				if (!statList || statList.length !== 3 || statList.some(x => !['hp', 'atk', 'def', 'spa', 'spd', 'spe'].includes(x)))
-					throw new Chat.ErrorMessage("Invalid stats list. Must choose 3 stats to increase.");
-				for (const pokemon of trainer.party) {
-					pokemon.tryIncrementFriendship(25);
-					for (const stat of statList) {
-						pokemon.tryIncrementIV(stat as StatID, 1);
-					}
+		case 1: {
+			const statList = args.shift()?.split('|').filter(x => !!x);
+			if (!statList || statList.length !== 3 || statList.some(x => !['hp', 'atk', 'def', 'spa', 'spd', 'spe'].includes(x))) { throw new Chat.ErrorMessage("Invalid stats list. Must choose 3 stats to increase."); }
+			for (const pokemon of trainer.party) {
+				pokemon.tryIncrementFriendship(25);
+				for (const stat of statList) {
+					pokemon.tryIncrementIV(stat as StatID, 1);
 				}
-				break;
 			}
-			case 2:
-				for (const pokemon of trainer.party) {
-					pokemon.tryIncrementFriendship(50);
-					pokemon.incrementAllIVs();
-				}
-				break;
-			case 3:
-				for (const pokemon of trainer.party) {
-					pokemon.tryIncrementFriendship(100);
-					pokemon.incrementAllIVs(2);
-				}
+			break;
+		}
+		case 2:
+			for (const pokemon of trainer.party) {
+				pokemon.tryIncrementFriendship(50);
+				pokemon.incrementAllIVs();
+			}
+			break;
+		case 3:
+			for (const pokemon of trainer.party) {
+				pokemon.tryIncrementFriendship(100);
+				pokemon.incrementAllIVs(2);
+			}
 		}
 
 		// Show dialog to learn new skill

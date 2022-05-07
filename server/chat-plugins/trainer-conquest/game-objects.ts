@@ -1,7 +1,7 @@
-import { FACILITY_TABLE, TCFacility } from "./facilities";
-import { TrainerConquest } from "./game";
-import { LABOR_TABLE, TCLabor } from "./labor";
-import { TrainerConquestPlayer } from "./player";
+import {FACILITY_TABLE, TCFacility} from "./facilities";
+import {TrainerConquest} from "./game";
+import {LABOR_TABLE, TCLabor} from "./labor";
+import {TrainerConquestPlayer} from "./player";
 
 export class TCKingdom {
 	static readonly MAX_TRAINERS = 6;
@@ -242,7 +242,7 @@ export class TCPokemon {
 	/** Used only for in-battle evo conditions */
 	evoConditionMet: boolean;
 
-	constructor(trainer: TCTrainer | null, species: string, isSignature: boolean = false) {
+	constructor(trainer: TCTrainer | null, species: string, isSignature = false) {
 		this.trainer = trainer;
 		this.game = trainer.game;
 		this.isSignature = isSignature;
@@ -256,7 +256,7 @@ export class TCPokemon {
 		this.friendship = 0;
 		this.item = '';
 		this.tutoredMoves = [];
-		
+
 		// TODO random nature
 		this.nature = 'Relaxed';
 
@@ -274,7 +274,7 @@ export class TCPokemon {
 		this.evoConditionMet = false;
 	}
 
-	tryIncrementIV(stat: StatID, amount: number = 1) {
+	tryIncrementIV(stat: StatID, amount = 1) {
 		this.ivs[stat] = Math.min(this.ivs[stat] + amount, 31);
 	}
 
@@ -285,7 +285,7 @@ export class TCPokemon {
 
 	tryIncrementEV(stat: StatID, amount: number) {
 		// TODO verify with Conquester
-		let sumEVs = Object.values(this.evs).reduce((a, b) => a + b);
+		const sumEVs = Object.values(this.evs).reduce((a, b) => a + b);
 		if (sumEVs + amount > 510) amount = 510 - sumEVs;
 
 		this.evs[stat] = Math.min(this.ivs[stat] + amount, 252);
@@ -298,16 +298,15 @@ export class TCPokemon {
 	tryLevelUp(n = 1) {
 		let maxLevel = 100;
 		switch (this.trainer?.rank) {
-			case 1:
-				maxLevel = 25;
-				break;
-			case 2:
-				maxLevel = 50;
-				break;
+		case 1:
+			maxLevel = 25;
+			break;
+		case 2:
+			maxLevel = 50;
+			break;
 		}
-		if (!this.isSignature && this.trainer && this.trainer.signature.level < maxLevel) 
-			maxLevel = this.trainer.signature.level;
-		
+		if (!this.isSignature && this.trainer && this.trainer.signature.level < maxLevel) { maxLevel = this.trainer.signature.level; }
+
 		this.level = Math.min(this.level + n, maxLevel);
 	}
 
@@ -315,34 +314,35 @@ export class TCPokemon {
 		if (!this.species.evos.map(toID).includes(toID(evoName))) return false;
 		const species = this.game.dex.species.get(evoName);
 		switch (species.evoType) {
-			case "useItem":
-				return this.trainer!.items.includes(toID(species.evoItem));
-			case "levelHold":
-				return this.item === toID(species.evoItem);
-			case "levelMove":
-				// TODO check level moves as well
-				return this.tutoredMoves.includes(toID(species.evoMove));
-			case "levelFriendship":
-				return this.friendship >= 255;
-			case "levelExtra": case "other":
-				switch (species.id) {
-					case 'mantine':
-						return this.trainer!.party.some(poke => poke.species.id === 'remoraid');
-					// TODO: probopass, crabominable, urshifu
-					case 'sylveon':
-						return this.tutoredMoves.some(moveID => this.game.dex.moves.get(moveID).type === "Fairy");
-					case 'sirfetchd': case 'runerigus':
-						return this.evoConditionMet;
-					case 'alcremie':
-						return this.item.endsWith('sweet');
-				}
-			case "trade":
-				// TODO check trading context somehow
-				if (species.evoItem) return this.item === toID(species.evoItem);
-				return true;
-			default:
-				if (species.evoLevel) return this.level >= species.evoLevel;
-				return false;
+		case "useItem":
+			return this.trainer!.items.includes(toID(species.evoItem));
+		case "levelHold":
+			return this.item === toID(species.evoItem);
+		case "levelMove":
+			// TODO check level moves as well
+			return this.tutoredMoves.includes(toID(species.evoMove));
+		case "levelFriendship":
+			return this.friendship >= 255;
+		case "levelExtra": case "other":
+			switch (species.id) {
+			case 'mantine':
+				return this.trainer!.party.some(poke => poke.species.id === 'remoraid');
+				// TODO: probopass, crabominable, urshifu
+			case 'sylveon':
+				return this.tutoredMoves.some(moveID => this.game.dex.moves.get(moveID).type === "Fairy");
+			case 'sirfetchd': case 'runerigus':
+				return this.evoConditionMet;
+			case 'alcremie':
+				return this.item.endsWith('sweet');
+			}
+			return false;
+		case "trade":
+			// TODO check trading context somehow
+			if (species.evoItem) return this.item === toID(species.evoItem);
+			return true;
+		default:
+			if (species.evoLevel) return this.level >= species.evoLevel;
+			return false;
 		}
 	}
 

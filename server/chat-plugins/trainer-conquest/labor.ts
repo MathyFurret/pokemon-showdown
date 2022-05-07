@@ -1,5 +1,5 @@
-import { TCFacility } from "./facilities";
-import { TCKingdom, TCTrainer } from "./game-objects";
+import {TCFacility} from "./facilities";
+import {TCKingdom, TCTrainer} from "./game-objects";
 
 export abstract class TCLabor {
 	kingdom: TCKingdom;
@@ -75,7 +75,7 @@ class TCConvoy extends TCLabor {
 	kingdomPath: TCKingdom[];
 
 	readonly activeTime: [number, number, number] = [4, 8, 13];
-	readonly cooldownTime: [number, number, number] =  [4, 3, 3];
+	readonly cooldownTime: [number, number, number] = [4, 3, 3];
 
 	constructor(kingdom: TCKingdom) {
 		super(kingdom);
@@ -94,7 +94,7 @@ class TCDefenders extends TCLabor {
 
 class TCScout extends TCLabor {
 	targetKingdom: TCKingdom | null;
-	
+
 	readonly startupTime: [number, number, number] = [3, 2, 2];
 	readonly activeTime: [number, number, number] = [3, 3, 3];
 	readonly cooldownTime: [number, number, number] = [4, 3, 3];
@@ -111,4 +111,4 @@ export const LABOR_TABLE: {[k: string]: new (kingdom: TCKingdom) => TCLabor} = {
 	'convoy': TCConvoy,
 	'defenders': TCDefenders,
 	'scout': TCScout,
-}
+};

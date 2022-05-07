@@ -1,4 +1,4 @@
-import { TrainerConquest } from "./game";
+import {TrainerConquest} from "./game";
 
 export const pages: Chat.PageTable = {
 	trainerconquest(args, user) {
@@ -20,48 +20,48 @@ export const pages: Chat.PageTable = {
 			const defaultpage = `view-trainerconquest-${room.roomid}`;
 			args.shift();
 			switch (args.shift()) {
-				case 'facility': {
-					const facility = game.popFacility(args);
-					if (!facility) return this.resolve(defaultpage);
-					const trainer = game.popTrainer(args);
-					buf += facility.showDialog(trainer || undefined, args);
-					break;
-				}
-				case 'labor': {
-					const labor = game.popLabor(args);
-					if (!labor) return this.resolve(defaultpage);
-					const trainer = game.popTrainer(args);
-					buf += labor.showDialog(trainer || undefined, args);
-					break;
-				}
-				case 'trainer': {
-					const trainer = game.popTrainer(args);
-					if (!trainer) return this.resolve(defaultpage);
-					buf += trainer.showDialog(args);
-					break;
-				}
-				case 'pokemon': {
-					const trainer = game.popTrainer(args);
-					if (!trainer) return this.resolve(defaultpage);
-					const pokemon = trainer.popPokemon(args);
-					if (!pokemon) return this.resolve(defaultpage + `-trainer-${trainer.num}`);
-					buf += pokemon.showDetails();
-					break;
-				}
-				case 'pokemonmoves': {
-					const trainer = game.popTrainer(args);
-					if (!trainer) return this.resolve(defaultpage);
-					const pokemon = trainer.popPokemon(args);
-					if (!pokemon) return this.resolve(defaultpage + `-trainer-${trainer.num}`);
-					buf += pokemon.showMovesDialog();
-					break;
-				}
-				default: {
-					// show default kingdom page
-				}
+			case 'facility': {
+				const facility = game.popFacility(args);
+				if (!facility) return this.resolve(defaultpage);
+				const trainer = game.popTrainer(args);
+				buf += facility.showDialog(trainer || undefined, args);
+				break;
+			}
+			case 'labor': {
+				const labor = game.popLabor(args);
+				if (!labor) return this.resolve(defaultpage);
+				const trainer = game.popTrainer(args);
+				buf += labor.showDialog(trainer || undefined, args);
+				break;
+			}
+			case 'trainer': {
+				const trainer = game.popTrainer(args);
+				if (!trainer) return this.resolve(defaultpage);
+				buf += trainer.showDialog(args);
+				break;
+			}
+			case 'pokemon': {
+				const trainer = game.popTrainer(args);
+				if (!trainer) return this.resolve(defaultpage);
+				const pokemon = trainer.popPokemon(args);
+				if (!pokemon) return this.resolve(defaultpage + `-trainer-${trainer.num}`);
+				buf += pokemon.showDetails();
+				break;
+			}
+			case 'pokemonmoves': {
+				const trainer = game.popTrainer(args);
+				if (!trainer) return this.resolve(defaultpage);
+				const pokemon = trainer.popPokemon(args);
+				if (!pokemon) return this.resolve(defaultpage + `-trainer-${trainer.num}`);
+				buf += pokemon.showMovesDialog();
+				break;
+			}
+			default: {
+				// show default kingdom page
+			}
 			}
 		}
 		buf += '</div>';
 		return buf;
 	},
-}
+};
