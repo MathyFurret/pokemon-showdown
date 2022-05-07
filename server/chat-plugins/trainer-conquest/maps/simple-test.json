@@ -1,0 +1,16 @@
+[
+	{
+		"types": ["Grass", "Fire", "Water"],
+		"trainStats": ["hp", "atk", "def"],
+		"facilities": ["farmersmarket", "communications"],
+		"labor": ["transport", "convoy"],
+		"neighbors": [1]
+	},
+	{
+		"types": ["Psychic", "Dark", "Ghost"],
+		"trainStats": ["spa", "spd", "spe"],
+		"facilities": ["bonusshrine", "relicclass"],
+		"labor": ["scout", "construction"],
+		"neighbors": [0]
+	}
+]
