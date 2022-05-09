@@ -6,6 +6,6 @@ and Pokemon Conquest. Part of the game involves battling on Pokemon Showdown, so
 turning it into a full chat game programmed into a PS server.
 
 However, I overwhelmed myself with the scope of the project and became too busy / fixated on other things
-to finish it. So for now I've shelved it.
+to finish it. So for now I've shelved it. I have pushed the code I've written but it's not in a playable state.
 
-You can contact PkmnKingdom or Mathy for more info, or if you're interested in finishing this.
+You can contact PkmnKingdom#1887 or Mathy#0845 for more info, or if you're interested in finishing this.
