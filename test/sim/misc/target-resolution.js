@@ -357,7 +357,7 @@ describe('Target Resolution', function () {
 		assert.false.fullHP(battle.p1.active[1], 'Altaria should not be at full HP, because Phantom Force was redirected and targeted it.');
 	});
 
-	it.skip(`should cause Rollout to target the same slot after being called as a submove`, function () {
+	it(`should cause Rollout to target the same slot after being called as a submove`, function () {
 		// hardcoded RNG seed to show the erroneous targeting behavior
 		battle = common.createBattle({gameType: 'doubles', seed: [1, 2, 3, 4]}, [[
 			{species: 'purrloin', ability: 'compoundeyes', moves: ['rollout', 'sleeptalk']},

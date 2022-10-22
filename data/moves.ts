@@ -14393,7 +14393,8 @@ export const Moves: {[moveid: string]: MoveData} = {
 			if (pokemon.volatiles['rollout'] && pokemon.volatiles['rollout'].hitCount) {
 				bp *= Math.pow(2, pokemon.volatiles['rollout'].hitCount);
 			}
-			if (pokemon.status !== 'slp') pokemon.addVolatile('rollout');
+			pokemon.addVolatile('rollout');
+			if (!pokemon.volatiles['rollout']?.targetSlot) pokemon.volatiles['rollout'].targetSlot = target.getSlot();
 			if (pokemon.volatiles['defensecurl']) {
 				bp *= 2;
 			}
@@ -14405,6 +14406,11 @@ export const Moves: {[moveid: string]: MoveData} = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
+		onModifyTarget(targetRelayVar, pokemon, target, move) {
+			if (pokemon.volatiles['rollout']?.targetSlot) {
+				targetRelayVar.target = this.getAtSlot(pokemon.volatiles['rollout'].targetSlot);
+			}
+		},
 		condition: {
 			duration: 2,
 			onLockMove: 'rollout',
