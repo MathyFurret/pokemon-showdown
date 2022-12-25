@@ -7,7 +7,7 @@ export const Items: {[itemid: string]: ItemData} = {
 		// and in Neutralizing Gas itself within data/abilities.ts
 		onSetAbility(ability, target, source, effect) {
 			if (effect && effect.effectType === 'Ability' && !effect.fullname?.endsWith('Trace')) {
-				this.add('-ability', source, effect);
+				this.add('-ability', target, effect);
 			}
 			this.add('-block', target, 'item: Ability Shield');
 			return null;
