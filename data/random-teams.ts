@@ -1743,26 +1743,6 @@ export class RandomTeams {
 			// Illusion shouldn't be on the last slot
 			if (species.baseSpecies === 'Zoroark' && pokemon.length >= (this.maxTeamSize - 1)) continue;
 
-			// If Zoroark is in the team, ensure its level is balanced
-			// Level range differs for each forme of Zoroark
-			if (
-				pokemon.some(pkmn => pkmn.species === 'Zoroark') &&
-				pokemon.length >= (this.maxTeamSize - 1) &&
-				(this.getLevel(species, isDoubles) < 76 || this.getLevel(species, isDoubles) > 94) &&
-				!this.adjustLevel
-			) {
-				continue;
-			}
-
-			if (
-				pokemon.some(pkmn => pkmn.species === 'Zoroark-Hisui') &&
-				pokemon.length >= (this.maxTeamSize - 1) &&
-				(this.getLevel(species, isDoubles) < 72 || this.getLevel(species, isDoubles) > 84) &&
-				!this.adjustLevel
-			) {
-				continue;
-			}
-
 			const types = species.types;
 			const typeCombo = types.slice().sort().join();
 			// Dynamically scale limits for different team sizes. The default and minimum value is 1.
@@ -1820,15 +1800,8 @@ export class RandomTeams {
 				pokemon.push(set);
 			}
 
-			if (pokemon.length === this.maxTeamSize) {
-				// Set Zoroark's level to be the same as the last Pokemon
-				for (const poke of pokemon) {
-					if (poke.ability === 'Illusion') poke.level = pokemon[this.maxTeamSize - 1].level;
-				}
-
-				// Don't bother tracking details for the last Pokemon
-				break;
-			}
+			// Don't bother tracking details for the last Pokemon
+			if (pokemon.length === this.maxTeamSize) break;
 
 			// Now that our Pokemon has passed all checks, we can increment our counters
 			baseFormes[species.baseSpecies] = 1;

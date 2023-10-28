@@ -70,16 +70,6 @@ export class RandomPOTDTeams extends RandomTeams {
 			// Illusion shouldn't be on the last slot
 			if (species.baseSpecies === 'Zoroark' && pokemon.length >= (this.maxTeamSize - 1)) continue;
 
-			// If Zoroark is in the team, the sixth slot should not be a Pokemon with extremely low level
-			if (
-				pokemon.some(pkmn => pkmn.name === 'Zoroark') &&
-				pokemon.length >= (this.maxTeamSize - 1) &&
-				this.getLevel(species, isDoubles) < 72 &&
-				!this.adjustLevel
-			) {
-				continue;
-			}
-
 			// Pokemon with Last Respects, Intrepid Sword, and Dauntless Shield shouldn't be leading
 			if (['Basculegion', 'Houndstone', 'Zacian', 'Zamazenta'].includes(species.baseSpecies) && !pokemon.length) continue;
 
@@ -135,14 +125,8 @@ export class RandomPOTDTeams extends RandomTeams {
 
 			// Okay, the set passes, add it to our team
 			pokemon.push(set);
-			if (pokemon.length === this.maxTeamSize) {
-				// Set Zoroark's level to be the same as the last Pokemon
-				const illusion = teamDetails.illusion;
-				if (illusion) pokemon[illusion - 1].level = pokemon[this.maxTeamSize - 1].level;
-
-				// Don't bother tracking details for the last Pokemon
-				break;
-			}
+			// Don't bother tracking details for the last Pokemon
+			if (pokemon.length === this.maxTeamSize) break;
 
 			// Now that our Pokemon has passed all checks, we can increment our counters
 			baseFormes[species.baseSpecies] = 1;
@@ -199,9 +183,6 @@ export class RandomPOTDTeams extends RandomTeams {
 				teamDetails.screens = 1;
 			}
 			if (set.role === 'Tera Blast user') teamDetails.teraBlast = 1;
-
-			// For setting Zoroark's level
-			if (set.ability === 'Illusion') teamDetails.illusion = pokemon.length;
 		}
 		if (pokemon.length < this.maxTeamSize && pokemon.length < 12) { // large teams sometimes cannot be built
 			throw new Error(`Could not build a random team for ${this.format} (seed=${seed})`);
